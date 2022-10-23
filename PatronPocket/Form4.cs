@@ -282,12 +282,74 @@ namespace PatronPocket
                         string deleteQuery = "DELETE FROM inout_info WHERE " + colName + " = '" + valueOfCell + "'";
                         SqlCommand cmd = new SqlCommand(deleteQuery, conn);
                         cmd.ExecuteNonQuery();
-                        conn.Close();
+                        
 
                         MessageBox.Show("INOUT deleted.");
+
+
+                        string selectCmd = $"SELECT inout_type,inout_name,inout_date,inout_value, inout_currency FROM inout_info WHERE username = '{username}' ";
+
+                        sda = new SqlDataAdapter(selectCmd, conn);
+                        sda.SelectCommand.ExecuteNonQuery();
+
+                        dt = new DataTable();
+                        sda.Fill(dt);
+
+                        inoutDG.DataSource = dt;
+
+                        // Calculating total income, outcome and total after adding new values
+                        //Set initial values to 0 so the old numbers wont ruin the calculation
+                        incomeTotal = 0;
+                        outcomeTotal = 0;
+                        total = 0;
+                        //Total income
+                        string selectInputCmd = $"SELECT inout_value FROM inout_info WHERE username = '{username}' AND inout_type = 'INCOME'";
+
+                        sda = new SqlDataAdapter(selectInputCmd, conn);
+                        sda.SelectCommand.ExecuteNonQuery();
+
+                        dt = new DataTable();
+                        sda.Fill(dt);
+
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            incomeTotal += Convert.ToDouble(row["inout_value"].ToString());
+                        }
+
+                        string totalIncome = Convert.ToString(incomeTotal);
+
+                        //Total outcome
+                        string selectOutputCmd = $"SELECT inout_value FROM inout_info WHERE username = '{username}' AND inout_type = 'OUTCOME'";
+
+                        sda = new SqlDataAdapter(selectOutputCmd, conn);
+                        sda.SelectCommand.ExecuteNonQuery();
+
+                        dt = new DataTable();
+                        sda.Fill(dt);
+
+                        foreach (DataRow row in dt.Rows)
+                        {
+                            outcomeTotal += Convert.ToDouble(row["inout_value"].ToString());
+                        }
+
+                        string totalOutcome = Convert.ToString(outcomeTotal);
+
+                        // Total
+
+                        total = incomeTotal - outcomeTotal;
+                        string theTotal = Convert.ToString(total);
+
+                        // Set the label values
+                        incomeLbl.Text = totalIncome;
+                        outcomeLbl.Text = totalOutcome;
+                        totalLbl.Text = theTotal;
+
+                        conn.Close();
                     }
 
                 }
+
+                
                     
 
 

@@ -86,12 +86,7 @@ namespace PatronPocket
 
         private void passkey_KeyPressed(object sender, KeyEventArgs e)
         {
-            if (e.KeyCode == Keys.Enter)
-            {
-                MessageBox.Show(Convert.ToString(e.KeyCode));
-                loginBtn_Click(this, new EventArgs());
-
-            }
+           
         }
 
         private void PPLogin_Load(object sender, EventArgs e)
